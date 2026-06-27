@@ -65,9 +65,55 @@ body {
   will-change: transform, opacity;
 }
 
+/*
+  Scroll reveal (fail-safe).
+
+  Elements tagged `.reveal` start hidden ONLY when JS has marked the document
+  ready (`.reveal-ready` is added by EditableReveal once it mounts). Without JS
+  — or before hydration — content stays fully visible, so nothing can vanish.
+  `.is-visible` (toggled by IntersectionObserver) plays the rise+fade.
+*/
+.reveal-ready .reveal {
+  opacity: 0;
+  transform: translate3d(0, 26px, 0);
+  will-change: transform, opacity;
+}
+
+.reveal-ready .reveal.is-visible {
+  opacity: 1;
+  transform: none;
+  transition: opacity 0.7s var(--ease-premium), transform 0.7s var(--ease-premium);
+}
+
+/* Staggered children: each direct child reveals slightly after the previous. */
+.reveal-ready .reveal-stagger > * {
+  opacity: 0;
+  transform: translate3d(0, 22px, 0);
+}
+
+.reveal-ready .reveal-stagger.is-visible > * {
+  opacity: 1;
+  transform: none;
+  transition: opacity 0.6s var(--ease-premium), transform 0.6s var(--ease-premium);
+}
+
+.reveal-ready .reveal-stagger.is-visible > *:nth-child(1) { transition-delay: 0.04s; }
+.reveal-ready .reveal-stagger.is-visible > *:nth-child(2) { transition-delay: 0.10s; }
+.reveal-ready .reveal-stagger.is-visible > *:nth-child(3) { transition-delay: 0.16s; }
+.reveal-ready .reveal-stagger.is-visible > *:nth-child(4) { transition-delay: 0.22s; }
+.reveal-ready .reveal-stagger.is-visible > *:nth-child(5) { transition-delay: 0.28s; }
+.reveal-ready .reveal-stagger.is-visible > *:nth-child(6) { transition-delay: 0.34s; }
+.reveal-ready .reveal-stagger.is-visible > *:nth-child(7) { transition-delay: 0.40s; }
+.reveal-ready .reveal-stagger.is-visible > *:nth-child(8) { transition-delay: 0.46s; }
+
 @media (prefers-reduced-motion: reduce) {
   .editable-enter > * {
     animation: none;
+  }
+  .reveal-ready .reveal,
+  .reveal-ready .reveal-stagger > * {
+    opacity: 1 !important;
+    transform: none !important;
   }
   .editable-site-root *,
   .editable-site-root *::before,
